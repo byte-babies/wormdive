@@ -164,7 +164,7 @@ export default function Home() {
               className="h-10 px-4"
             >
               <LogOut className="w-4 h-4 mr-2" />
-              Sign Out
+               Use Another Email
             </Button>
           </div>
         </div>
@@ -190,39 +190,39 @@ export default function Home() {
         </div>
 
         {/* Grid of Output Boxes */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-8">
           {filteredBoxes.map((box) => (
             <div
               key={box.id}
-              className="bg-card/80 backdrop-blur-xl rounded-2xl border border-border/50 p-6 hover:shadow-lg transition-all duration-200 hover:border-border/80"
+              className="bg-card/80 backdrop-blur-xl rounded-2xl border border-border/50 p-8 hover:shadow-lg transition-all duration-200 hover:border-border/80 min-h-[280px]"
             >
-              <div className="flex items-start justify-between mb-4">
-                <div>
-                  <h3 className="text-lg font-semibold text-foreground mb-1">
+              <div className="flex items-start justify-between mb-6">
+                <div className="flex-1">
+                  <h3 className="text-xl font-semibold text-foreground mb-2">
                     {box.title}
                   </h3>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-muted-foreground leading-relaxed">
                     {box.description}
                   </p>
                 </div>
-                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                  <Download className="w-4 h-4" />
+                <Button variant="ghost" size="sm" className="h-10 w-10 p-0 ml-4 flex-shrink-0">
+                  <Download className="w-5 h-5" />
                 </Button>
               </div>
               
-              <div className="space-y-3">
-                <div className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(box.status)}`}>
+              <div className="space-y-4">
+                <div className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-medium border ${getStatusColor(box.status)}`}>
                   {box.status.charAt(0).toUpperCase() + box.status.slice(1)}
                 </div>
                 
-                <div className="bg-muted/50 rounded-lg p-3">
-                  <p className="text-sm text-foreground">
+                <div className="bg-muted/50 rounded-xl p-4 min-h-[80px]">
+                  <p className="text-sm text-foreground leading-relaxed">
                     {box.data}
                   </p>
                 </div>
                 
-                <div className="flex items-center justify-between text-xs text-muted-foreground">
-                  <span>ID: {box.id}</span>
+                <div className="flex items-center justify-between text-sm text-muted-foreground pt-2">
+                  <span className="font-medium">ID: {box.id}</span>
                   <span>{box.timestamp}</span>
                 </div>
               </div>
