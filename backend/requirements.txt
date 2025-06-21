@@ -2,3 +2,4 @@ ghunt==2.2.0
 sherlock-project==0.15.0
 dotenv==0.9.9
 fastapi==0.115.13
+requests==2.32.4
