@@ -3,7 +3,7 @@
 import { useEffect, useRef } from 'react';
 import * as d3 from 'd3';
 
-export default function SocialMediaGraph({ results = [] }) {
+export default function SocialMediaGraph({ results = [], username = "User" }) {
   const svgRef = useRef();
 
   useEffect(() => {
@@ -35,7 +35,7 @@ export default function SocialMediaGraph({ results = [] }) {
 
     // Create nodes from actual results
     const nodes = [
-      { id: 'email', name: 'User Profile', type: 'email', group: 0 }
+      { id: 'username', name: username, type: 'username', group: 0 }
     ];
 
     // Add social media nodes from results
@@ -50,33 +50,33 @@ export default function SocialMediaGraph({ results = [] }) {
       });
     });
 
-    // Create links from email to each social media platform
+    // Create links from username to each social media platform
     const links = nodes
-      .filter(node => node.id !== 'email')
+      .filter(node => node.id !== 'username')
       .map(node => ({
-        source: 'email',
+        source: 'username',
         target: node.id,
         value: 0.8
       }));
 
-    // Add some cross-platform connections for platforms that are likely connected
-    const crossLinks = [];
-    const socialPlatforms = nodes.filter(n => n.type === 'social' && n.id !== 'email');
+    // No cross-platform connections - all nodes connect only to username
+    // const crossLinks = [];
+    // const socialPlatforms = nodes.filter(n => n.type === 'social' && n.id !== 'username');
     
     // Create some random cross-connections
-    for (let i = 0; i < Math.min(socialPlatforms.length, 5); i++) {
-      for (let j = i + 1; j < Math.min(socialPlatforms.length, i + 3); j++) {
-        if (Math.random() > 0.5) {
-          crossLinks.push({
-            source: socialPlatforms[i].id,
-            target: socialPlatforms[j].id,
-            value: Math.random() * 0.3 + 0.2
-          });
-        }
-      }
-    }
+    // for (let i = 0; i < Math.min(socialPlatforms.length, 5); i++) {
+    //   for (let j = i + 1; j < Math.min(socialPlatforms.length, i + 3); j++) {
+    //     if (Math.random() > 0.5) {
+    //       crossLinks.push({
+    //         source: socialPlatforms[i].id,
+    //         target: socialPlatforms[j].id,
+    //         value: Math.random() * 0.3 + 0.2
+    //       });
+    //     }
+    //   }
+    // }
 
-    links.push(...crossLinks);
+    // links.push(...crossLinks);
 
     // Create the force simulation
     const simulation = d3.forceSimulation(nodes)
@@ -92,7 +92,7 @@ export default function SocialMediaGraph({ results = [] }) {
       .selectAll('line')
       .data(links)
       .enter().append('line')
-      .attr('stroke', d => d.source === 'email' ? '#3b82f6' : '#6b7280')
+      .attr('stroke', d => d.source === 'username' ? '#3b82f6' : '#6b7280')
       .attr('stroke-opacity', 0.6)
       .attr('stroke-width', d => d.value * 3)
       .attr('marker-end', 'url(#arrowhead)');
@@ -109,10 +109,17 @@ export default function SocialMediaGraph({ results = [] }) {
 
     // Add circles to nodes
     node.append('circle')
-      .attr('r', d => d.type === 'email' ? 35 : 20)
+      .attr('r', d => {
+        // Base radius for username node
+        if (d.type === 'username') {
+          return Math.max(35, d.name.length * 2.5); // Scale with text length, minimum 35
+        }
+        // Base radius for social media nodes
+        return Math.max(20, d.name.length * 1.8); // Scale with text length, minimum 20
+      })
       .attr('fill', d => {
         switch(d.group) {
-          case 0: return '#3b82f6'; // email
+          case 0: return '#3b82f6'; // username
           case 1: return '#ef4444'; // naminter results
           case 2: return '#10b981'; // sherlock results
           default: return '#6b7280';
@@ -128,7 +135,7 @@ export default function SocialMediaGraph({ results = [] }) {
       .attr('text-anchor', 'middle')
       .attr('dy', '.35em')
       .attr('fill', '#fff')
-      .style('font-size', d => d.type === 'email' ? '14px' : '11px')
+      .style('font-size', d => d.type === 'username' ? '14px' : '11px')
       .style('font-weight', 'bold')
       .style('pointer-events', 'none');
 
@@ -144,7 +151,12 @@ export default function SocialMediaGraph({ results = [] }) {
       d3.select(this).select('circle')
         .transition()
         .duration(200)
-        .attr('r', d.type === 'email' ? 40 : 25);
+        .attr('r', d => {
+          if (d.type === 'username') {
+            return Math.max(40, d.name.length * 2.8); // Slightly larger on hover
+          }
+          return Math.max(25, d.name.length * 2.1); // Slightly larger on hover
+        });
       
       // Highlight connected links
       link.style('stroke-opacity', l => 
@@ -155,7 +167,12 @@ export default function SocialMediaGraph({ results = [] }) {
       d3.select(this).select('circle')
         .transition()
         .duration(200)
-        .attr('r', d.type === 'email' ? 35 : 20);
+        .attr('r', d => {
+          if (d.type === 'username') {
+            return Math.max(35, d.name.length * 2.5);
+          }
+          return Math.max(20, d.name.length * 1.8);
+        });
       
       // Reset link opacity
       link.style('stroke-opacity', 0.6);
@@ -195,7 +212,7 @@ export default function SocialMediaGraph({ results = [] }) {
     return () => {
       simulation.stop();
     };
-  }, [results]); // Re-run when results change
+  }, [results, username]); // Re-run when results or username change
 
   return (
     <div className="w-full flex justify-center">
