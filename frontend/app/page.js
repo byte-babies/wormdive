@@ -23,30 +23,52 @@ export default function Home() {
     setSearchError("");
     setResults([]); // Clear previous results
     
+    console.log('Starting search for:', searchUsername);
+    
     try {
-      const response = await fetch(`http://localhost:8000/username/${searchUsername}`);
+      const response = await fetch(`http://localhost:8000/username/${searchUsername}`, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+        },
+      });
+      
+      console.log('Response status:', response.status);
+      console.log('Response ok:', response.ok);
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       
-      const reader = response.body?.getReader();
+      if (!response.body) {
+        throw new Error('Response body is null');
+      }
+      
+      const reader = response.body.getReader();
       const decoder = new TextDecoder("utf-8");
       let buffer = "";
+
+      console.log('Starting to read stream...');
 
       while (true) {
         const { done, value } = await reader.read();
         
-        if (done) break;
+        if (done) {
+          console.log('Stream finished');
+          break;
+        }
         
         buffer += decoder.decode(value, { stream: true });
         const lines = buffer.split('\n');
         buffer = lines.pop() || ''; // Keep incomplete line in buffer
         
+        console.log('Received chunk, lines:', lines.length);
+        
         for (const line of lines) {
           if (line.trim()) {
             try {
               const result = JSON.parse(line);
+              console.log('Parsed result:', result);
               setResults(prev => [...prev, {
                 id: Date.now() + Math.random(), // Unique ID
                 title: result.name,
@@ -58,14 +80,14 @@ export default function Home() {
                 source: result.source
               }]);
             } catch (e) {
-              console.error('Failed to parse JSON:', line);
+              console.error('Failed to parse JSON:', line, e);
             }
           }
         }
       }
     } catch (error) {
       console.error('Search error:', error);
-      setSearchError("Failed to search. Please try again.");
+      setSearchError(`Failed to search: ${error.message}`);
     } finally {
       setIsSearching(false);
     }
@@ -279,7 +301,7 @@ export default function Home() {
         {results.length > 0 && (
           <div className="mt-12">
             <h2 className="text-2xl font-bold text-foreground mb-6">Social Media Network</h2>
-            <SocialMediaGraph results={results} />
+            <SocialMediaGraph results={results} username={username} />
           </div>
         )}
 
