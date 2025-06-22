@@ -1,5 +1,3 @@
-from ghunt.apis.peoplepa import PeoplePaHttp
-from ghunt.objects.base import GHuntCreds
 import subprocess
 import asyncio
 
@@ -19,6 +17,6 @@ def find_email(email):
         if stderr:
             return stderr.decode()
     rawoutput = asyncio.run(run(f'ghunt email {email}'))
-    return 
+    return rawoutput
 
 print(find_email(input()))
