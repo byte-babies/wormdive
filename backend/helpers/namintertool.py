@@ -1,16 +1,23 @@
 import asyncio
+import json
 from naminter import Naminter
 
 def name_find(username : str):
+    goodres = []
     async def main():
         async with Naminter(max_tasks=200) as naminter:
             await naminter.fetch_remote_list()
             results = await naminter.check_username(username)
             for result in results:
-                print(result)
-    return asyncio.run(main())
+                if result.status_code == 200:
+                    goodres.append(result.site_url)
+    # temporary result, and parsing
+    asyncio.run(main())
+    # parse raw
+    return json.dumps([[],goodres])
+
     
-print(name_find("Yoshixi"))
+#print(name_find("Yoshixi"))
 
 #import subprocess
 #import asyncio
