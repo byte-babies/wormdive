@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,6 +15,23 @@ export default function Home() {
   const [results, setResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [searchError, setSearchError] = useState("");
+  const [theme, setTheme] = useState("dark");
+
+  // Detect theme changes
+  useEffect(() => {
+    const checkTheme = () => {
+      if (typeof window !== 'undefined') {
+        const isDark = document.documentElement.classList.contains('dark');
+        setTheme(isDark ? 'dark' : 'light');
+      }
+    };
+    
+    checkTheme();
+    const observer = new MutationObserver(checkTheme);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    
+    return () => observer.disconnect();
+  }, []);
 
   const handleSearch = async (searchUsername) => {
     if (!searchUsername.trim()) return;
@@ -122,45 +139,111 @@ export default function Home() {
 
   if (!isSearchSubmitted) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex items-center justify-center p-4">
-        <div className="relative">
-          {/* Background decoration */}
-          <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-primary/5 rounded-3xl blur-3xl"></div>
+      <div className="min-h-screen relative overflow-hidden">
+        {/* Animated Background */}
+        <div className="absolute inset-0">
+          {/* Gradient Background */}
+          <div className={`absolute inset-0 transition-all duration-1000 ${
+            theme === 'dark' 
+              ? 'bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900' 
+              : 'bg-gradient-to-br from-blue-50 via-indigo-100 to-purple-50'
+          }`} />
           
-          <div className="relative bg-card/80 backdrop-blur-xl rounded-3xl shadow-2xl p-12 w-full max-w-md border border-border/50">
-            <div className="text-center mb-10">
-              <div className="w-20 h-20 bg-gradient-to-br from-primary to-primary/80 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
-                <MessageCircle className="w-10 h-10 text-primary-foreground" />
-              </div>
-              <h1 className="text-4xl font-bold text-foreground mb-3 bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text">
-                WormDive
-              </h1>
-              <p className="text-muted-foreground text-lg">Enter a username to find social media profiles</p>
-            </div>
+          {/* Animated Particles */}
+          <div className="absolute inset-0">
+            {[...Array(20)].map((_, i) => (
+              <div
+                key={i}
+                className={`absolute rounded-full animate-pulse transition-all duration-1000 ${
+                  theme === 'dark'
+                    ? 'bg-purple-500/20'
+                    : 'bg-blue-500/20'
+                }`}
+                style={{
+                  left: `${Math.random() * 100}%`,
+                  top: `${Math.random() * 100}%`,
+                  width: `${Math.random() * 4 + 2}px`,
+                  height: `${Math.random() * 4 + 2}px`,
+                  animationDelay: `${Math.random() * 2}s`,
+                  animationDuration: `${Math.random() * 3 + 2}s`
+                }}
+              />
+            ))}
+          </div>
+          
+          {/* Floating Orbs */}
+          <div className="absolute inset-0">
+            {[...Array(6)].map((_, i) => (
+              <div
+                key={i}
+                className={`absolute rounded-full blur-xl animate-float transition-all duration-1000 ${
+                  theme === 'dark'
+                    ? 'bg-gradient-to-r from-purple-500/30 to-blue-500/30'
+                    : 'bg-gradient-to-r from-blue-400/30 to-purple-400/30'
+                }`}
+                style={{
+                  left: `${Math.random() * 100}%`,
+                  top: `${Math.random() * 100}%`,
+                  width: `${Math.random() * 200 + 100}px`,
+                  height: `${Math.random() * 200 + 100}px`,
+                  animationDelay: `${Math.random() * 5}s`,
+                  animationDuration: `${Math.random() * 10 + 10}s`
+                }}
+              />
+            ))}
+          </div>
+          
+          {/* Grid Pattern */}
+          <div className={`absolute inset-0 opacity-10 transition-all duration-1000 ${
+            theme === 'dark' ? 'bg-grid-white/[0.02]' : 'bg-grid-slate-900/[0.02]'
+          }`} />
+        </div>
+
+        {/* Content */}
+        <div className="relative z-10 flex items-center justify-center min-h-screen p-4">
+          <div className="relative">
+            {/* Card Glow Effect */}
+            <div className={`absolute inset-0 rounded-3xl blur-3xl transition-all duration-1000 ${
+              theme === 'dark'
+                ? 'bg-gradient-to-r from-purple-500/20 via-blue-500/20 to-purple-500/20'
+                : 'bg-gradient-to-r from-blue-400/20 via-purple-400/20 to-blue-400/20'
+            }`} />
             
-            <form onSubmit={handleUsernameSubmit} className="space-y-6">
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-foreground">
-                  Username
-                </label>
-                <Input
-                  type="text"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  placeholder="Enter username..."
-                  className="h-12 text-base"
-                  required
-                />
+            <div className="relative bg-card/80 backdrop-blur-xl rounded-3xl shadow-2xl p-12 w-full max-w-md border border-border/50">
+              <div className="text-center mb-10">
+                <div className="w-20 h-20 bg-gradient-to-br from-primary to-primary/80 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg animate-pulse">
+                  <MessageCircle className="w-10 h-10 text-primary-foreground" />
+                </div>
+                <h1 className="text-4xl font-bold text-foreground mb-3 bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text animate-fade-in">
+                  WormDive
+                </h1>
+                <p className="text-muted-foreground text-lg animate-fade-in-delay">Enter a username to find social media profiles</p>
               </div>
               
-              <Button type="submit" className="w-full h-12 text-base font-medium bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 shadow-lg">
-                <Sparkles className="w-4 h-4 mr-2" />
-                Find Profiles
-              </Button>
-            </form>
+              <form onSubmit={handleUsernameSubmit} className="space-y-6">
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-foreground">
+                    Username
+                  </label>
+                  <Input
+                    type="text"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    placeholder="Enter username..."
+                    className="h-12 text-base transition-all duration-300 focus:scale-[1.02]"
+                    required
+                  />
+                </div>
+                
+                <Button type="submit" className="w-full h-12 text-base font-medium bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 shadow-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-xl">
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  Find Profiles
+                </Button>
+              </form>
 
-            <div className="absolute top-6 right-6">
-              <ThemeToggle />
+              <div className="absolute top-6 right-6">
+                <ThemeToggle />
+              </div>
             </div>
           </div>
         </div>
@@ -300,7 +383,7 @@ export default function Home() {
         {/* Social Media Graph */}
         {results.length > 0 && (
           <div className="mt-12">
-            <h2 className="text-2xl font-bold text-foreground mb-6">Social Media Network</h2>
+            <h2 className="text-2xl font-bold text-foreground mb-6">Username Network</h2>
             <SocialMediaGraph results={results} username={username} />
           </div>
         )}
