@@ -10,21 +10,22 @@ import SocialMediaGraph from "../components/social-media-graph";
 
 export default function Home() {
   const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [isSearchSubmitted, setIsSearchSubmitted] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [results, setResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [searchError, setSearchError] = useState("");
 
-  const handleSearch = async (searchUsername) => {
-    if (!searchUsername.trim()) return;
+  const handleSearch = async (searchUsername, searchEmail) => {
+    if (!searchUsername.trim() || !searchEmail.trim()) return;
     
     setIsSearching(true);
     setSearchError("");
     setResults([]); // Clear previous results
     
     try {
-      const response = await fetch(`http://localhost:8000/username/${searchUsername}`);
+      const response = await fetch(`http://localhost:8000/username/?user={searchUsername}&email={searchEmail}`);
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -126,6 +127,14 @@ export default function Home() {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder="Enter username..."
+                  className="h-12 text-base"
+                  required
+                />
+                <Input
+                  type="text"
+                  value={email}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="Enter email..."
                   className="h-12 text-base"
                   required
                 />
