@@ -1,7 +1,4 @@
 ghunt==2.2.0
-sherlock-project==0.15.0
-dotenv==0.9.9
+naminter==1.0.4
 fastapi==0.115.13
 uvicorn==0.34.3
-requests==2.32.4
-naminter==1.0.4
