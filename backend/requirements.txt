@@ -1,6 +1,6 @@
 ghunt
 naminter
-fastapi==0.115.13
-uvicorn==0.34.3
-google-genai
+fastapi
+uvicorn
 sherlock-project
+holehe

@@ -279,7 +279,7 @@ export default function Home() {
         {results.length > 0 && (
           <div className="mt-12">
             <h2 className="text-2xl font-bold text-foreground mb-6">Social Media Network</h2>
-            <SocialMediaGraph results={results} />
+            <SocialMediaGraph results={results} username={username} />
           </div>
         )}
 
