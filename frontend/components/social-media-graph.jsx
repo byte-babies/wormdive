@@ -3,7 +3,7 @@
 import { useEffect, useRef } from 'react';
 import * as d3 from 'd3';
 
-export default function SocialMediaGraph() {
+export default function SocialMediaGraph({ results = [] }) {
   const svgRef = useRef();
 
   useEffect(() => {
@@ -33,50 +33,48 @@ export default function SocialMediaGraph() {
       .attr('fill', '#3b82f6')
       .style('stroke', 'none');
 
-    // Define nodes and edges
+    // Create nodes from actual results
     const nodes = [
-      { id: 'email', name: 'user@example.com', type: 'email', group: 0 },
-      { id: 'facebook', name: 'Facebook', type: 'social', group: 1 },
-      { id: 'twitter', name: 'Twitter', type: 'social', group: 1 },
-      { id: 'instagram', name: 'Instagram', type: 'social', group: 1 },
-      { id: 'linkedin', name: 'LinkedIn', type: 'professional', group: 2 },
-      { id: 'github', name: 'GitHub', type: 'professional', group: 2 },
-      { id: 'youtube', name: 'YouTube', type: 'media', group: 3 },
-      { id: 'reddit', name: 'Reddit', type: 'social', group: 1 },
-      { id: 'discord', name: 'Discord', type: 'gaming', group: 4 },
-      { id: 'telegram', name: 'Telegram', type: 'messaging', group: 5 },
-      { id: 'whatsapp', name: 'WhatsApp', type: 'messaging', group: 5 },
-      { id: 'tiktok', name: 'TikTok', type: 'media', group: 3 },
-      { id: 'snapchat', name: 'Snapchat', type: 'social', group: 1 },
-      { id: 'stackoverflow', name: 'Stack Overflow', type: 'professional', group: 2 },
-      { id: 'medium', name: 'Medium', type: 'professional', group: 2 },
-      { id: 'steam', name: 'Steam', type: 'gaming', group: 4 },
-      { id: 'twitch', name: 'Twitch', type: 'gaming', group: 4 },
-      { id: 'behance', name: 'Behance', type: 'professional', group: 2 },
-      { id: 'xbox', name: 'Xbox Live', type: 'gaming', group: 4 }
+      { id: 'email', name: 'User Profile', type: 'email', group: 0 }
     ];
 
+    // Add social media nodes from results
+    results.forEach((result, index) => {
+      nodes.push({
+        id: result.title.toLowerCase().replace(/\s+/g, '_'),
+        name: result.title,
+        type: 'social',
+        group: result.source === 'naminter' ? 1 : 2,
+        url: result.url,
+        source: result.source
+      });
+    });
+
+    // Create links from email to each social media platform
     const links = nodes
       .filter(node => node.id !== 'email')
       .map(node => ({
         source: 'email',
         target: node.id,
-        value: Math.random() * 0.5 + 0.5 // Random weight between 0.5 and 1
+        value: 0.8
       }));
 
-    // Add some cross-platform connections
-    const crossLinks = [
-      { source: 'facebook', target: 'instagram', value: 0.3 },
-      { source: 'twitter', target: 'linkedin', value: 0.4 },
-      { source: 'github', target: 'stackoverflow', value: 0.6 },
-      { source: 'youtube', target: 'twitch', value: 0.3 },
-      { source: 'discord', target: 'steam', value: 0.5 },
-      { source: 'telegram', target: 'whatsapp', value: 0.2 },
-      { source: 'reddit', target: 'youtube', value: 0.3 },
-      { source: 'linkedin', target: 'medium', value: 0.4 },
-      { source: 'instagram', target: 'tiktok', value: 0.4 },
-      { source: 'snapchat', target: 'instagram', value: 0.3 }
-    ];
+    // Add some cross-platform connections for platforms that are likely connected
+    const crossLinks = [];
+    const socialPlatforms = nodes.filter(n => n.type === 'social' && n.id !== 'email');
+    
+    // Create some random cross-connections
+    for (let i = 0; i < Math.min(socialPlatforms.length, 5); i++) {
+      for (let j = i + 1; j < Math.min(socialPlatforms.length, i + 3); j++) {
+        if (Math.random() > 0.5) {
+          crossLinks.push({
+            source: socialPlatforms[i].id,
+            target: socialPlatforms[j].id,
+            value: Math.random() * 0.3 + 0.2
+          });
+        }
+      }
+    }
 
     links.push(...crossLinks);
 
@@ -115,11 +113,8 @@ export default function SocialMediaGraph() {
       .attr('fill', d => {
         switch(d.group) {
           case 0: return '#3b82f6'; // email
-          case 1: return '#ef4444'; // social
-          case 2: return '#10b981'; // professional
-          case 3: return '#f59e0b'; // media
-          case 4: return '#8b5cf6'; // gaming
-          case 5: return '#06b6d4'; // messaging
+          case 1: return '#ef4444'; // naminter results
+          case 2: return '#10b981'; // sherlock results
           default: return '#6b7280';
         }
       })
@@ -136,6 +131,13 @@ export default function SocialMediaGraph() {
       .style('font-size', d => d.type === 'email' ? '14px' : '11px')
       .style('font-weight', 'bold')
       .style('pointer-events', 'none');
+
+    // Add click handler for social media nodes
+    node.on('click', function(event, d) {
+      if (d.url) {
+        window.open(d.url, '_blank');
+      }
+    });
 
     // Add hover effects
     node.on('mouseover', function(event, d) {
@@ -193,13 +195,14 @@ export default function SocialMediaGraph() {
     return () => {
       simulation.stop();
     };
-  }, []);
+  }, [results]); // Re-run when results change
 
   return (
     <div className="w-full flex justify-center">
       <svg
         ref={svgRef}
-        className="border border-border/30 rounded-lg bg-muted/20 shadow-lg"
+        className="border border-border/50 rounded-xl bg-card/50 backdrop-blur-sm"
+        style={{ maxWidth: '100%', height: 'auto' }}
       />
     </div>
   );
