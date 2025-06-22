@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Send, LogOut, MessageCircle, Sparkles, Search, Filter, Download } from "lucide-react";
+import SocialMediaGraph from "../components/social-media-graph";
 
 export default function Home() {
   const [email, setEmail] = useState("");
@@ -229,6 +230,7 @@ export default function Home() {
             </div>
           ))}
         </div>
+        <SocialMediaGraph />
 
         {filteredBoxes.length === 0 && (
           <div className="text-center py-12">
