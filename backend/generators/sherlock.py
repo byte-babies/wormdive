@@ -6,7 +6,7 @@ async def stream_sherlock(username: str):
     # Invoke Sherlock CLI via subprocess, JSON output
     proc = await asyncio.create_subprocess_exec(
         "sherlock", username,
-        
+        "--output", "/dev/null",
         stdout=PIPE,
         stderr=asyncio.subprocess.DEVNULL,
     )
