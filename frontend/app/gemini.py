@@ -11,6 +11,6 @@ client = genai.Client(api_key=GEMINI_API_KEY)
 
 with open('everything.json', 'r') as f:
     response = client.models.generate_content(
-        model="gemini-2.5-flash", contents="You are an OSINT investigator, try to infer any connections betweens nodes and summarize it to the user"+f.read()
+        model="gemini-2.5-flash", contents="You are an OSINT investigator, try to infer any connections betweens nodes and summarize it to the user. Here is your info:"+f.read()
     )
     # display the response somewhere on the frontend
