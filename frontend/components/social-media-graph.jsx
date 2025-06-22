@@ -13,8 +13,8 @@ export default function SocialMediaGraph({ results = [], username = "User" }) {
     d3.select(svgRef.current).selectAll("*").remove();
 
     // Set up the SVG
-    const width = 1000;
-    const height = 700;
+    const width = 800;
+    const height = 500;
     const svg = d3.select(svgRef.current)
       .attr('width', width)
       .attr('height', height);

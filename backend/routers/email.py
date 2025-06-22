@@ -5,9 +5,7 @@ from generators.email import combined_stream
 router = APIRouter()
 
 @router.get("/email/{email}", response_class=StreamingResponse)
-async def stream_username(username: str):
+async def stream_username(email: str):
     # Returns an interleaved stream
     stream = combined_stream(email)
     return StreamingResponse(stream, media_type="application/json")
-
-

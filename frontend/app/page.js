@@ -10,6 +10,7 @@ import SocialMediaGraph from "../components/social-media-graph";
 
 export default function Home() {
   const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [isSearchSubmitted, setIsSearchSubmitted] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [results, setResults] = useState([]);
@@ -33,17 +34,15 @@ export default function Home() {
     return () => observer.disconnect();
   }, []);
 
-  const handleSearch = async (searchUsername) => {
-    if (!searchUsername.trim()) return;
-    
+  const handleSearch = async (searchUsername, searchEmail) => {
     setIsSearching(true);
     setSearchError("");
     setResults([]); // Clear previous results
     
-    console.log('Starting search for:', searchUsername);
+    console.log('Starting search for:', searchUsername, searchEmail);
     
     try {
-      const response = await fetch(`http://localhost:8000/username/${searchUsername}`, {
+      const response = await fetch(`http://localhost:8000/username/?user={searchUsername}&email={searchEmail}`, {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
@@ -112,10 +111,8 @@ export default function Home() {
 
   const handleUsernameSubmit = (e) => {
     e.preventDefault();
-    if (username.trim()) {
-      setIsSearchSubmitted(true);
-      handleSearch(username);
-    }
+    setIsSearchSubmitted(true);
+    handleSearch(username, email);
   };
 
   const getStatusColor = (status) => {
@@ -217,7 +214,7 @@ export default function Home() {
                 <h1 className="text-4xl font-bold text-foreground mb-3 bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text animate-fade-in">
                   WormDive
                 </h1>
-                <p className="text-muted-foreground text-lg animate-fade-in-delay">Enter a username to find social media profiles</p>
+                <p className="text-muted-foreground text-lg animate-fade-in-delay">Enter a username and or email to find social media profiles</p>
               </div>
               
               <form onSubmit={handleUsernameSubmit} className="space-y-6">
@@ -231,7 +228,13 @@ export default function Home() {
                     onChange={(e) => setUsername(e.target.value)}
                     placeholder="Enter username..."
                     className="h-12 text-base transition-all duration-300 focus:scale-[1.02]"
-                    required
+                  />
+                  <Input
+                    type="text"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Enter email..."
+                    className="h-12 text-base transition-all duration-300 focus:scale-[1.02]"
                   />
                 </div>
                 
@@ -332,7 +335,7 @@ export default function Home() {
         </div>
 
         {/* Grid of Social Media Results */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-8">
           {filteredResults.map((result) => (
             <div
               key={result.id}
