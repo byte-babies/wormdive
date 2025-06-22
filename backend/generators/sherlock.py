@@ -17,5 +17,6 @@ async def stream_sherlock(username: str):
         if len(split_line) == 3 and split_line[0] == "[+]":
             name = split_line[1][:-1]
             url = split_line[2]
-
+            if (name == "Mydramalist" or name == "Sourceforge" or name == "Filmot Channel Search" or name == "kaskus" or name == "TorrentGalaxy" or name == "Freelance.habr"):
+                continue
             yield json.dumps({"source": "sherlock", "name": name, "url": url}) + "\n"

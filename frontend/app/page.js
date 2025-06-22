@@ -5,8 +5,9 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { Send, LogOut, Cctv, Sparkles, Search, Filter, Download, Globe, ExternalLink } from "lucide-react";
+import { Send, LogOut, Cctv, Sparkles, Search, Filter, Download, Globe, ExternalLink, Brain, Loader2 } from "lucide-react";
 import SocialMediaGraph from "../components/social-media-graph";
+import ReactMarkdown from 'react-markdown';
 
 export default function Home() {
   const [username, setUsername] = useState("");
@@ -16,6 +17,8 @@ export default function Home() {
   const [isSearching, setIsSearching] = useState(false);
   const [searchError, setSearchError] = useState("");
   const [theme, setTheme] = useState("dark");
+  const [aiAnalysis, setAiAnalysis] = useState(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   // Detect theme changes
   useEffect(() => {
@@ -39,10 +42,21 @@ export default function Home() {
     setIsSearching(true);
     setSearchError("");
     setResults([]); // Clear previous results
+    setAiAnalysis(null); // Clear previous analysis
     
     console.log('Starting search for:', searchUsername);
     
     try {
+      // Clear any previous results for this username from backend
+      try {
+        await fetch(`http://localhost:8000/api/username/${searchUsername}/clear`, {
+          method: 'DELETE'
+        });
+      } catch (e) {
+        // Ignore clear errors, continue with search
+        console.log('Could not clear previous results:', e);
+      }
+      
       const response = await fetch(`http://localhost:8000/username/${searchUsername}`, {
         method: 'GET',
         headers: {
@@ -107,6 +121,28 @@ export default function Home() {
       setSearchError(`Failed to search: ${error.message}`);
     } finally {
       setIsSearching(false);
+    }
+  };
+
+  const handleAiAnalysis = async () => {
+    if (!username.trim() || results.length === 0) return;
+    
+    setIsAnalyzing(true);
+    
+    try {
+      const response = await fetch(`http://localhost:8000/api/username/${username}/analyze`);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      setAiAnalysis(data.ai_analysis);
+    } catch (error) {
+      console.error('AI Analysis error:', error);
+      setSearchError(`Failed to get AI analysis: ${error.message}`);
+    } finally {
+      setIsAnalyzing(false);
     }
   };
 
@@ -276,6 +312,7 @@ export default function Home() {
                 setResults([]);
                 setIsSearching(false);
                 setSearchError("");
+                setAiAnalysis(null);
               }}
               className="h-10 px-4"
             >
@@ -301,6 +338,61 @@ export default function Home() {
         <div className="px-8 py-4 max-w-7xl mx-auto w-full">
           <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 flex items-center space-x-3">
             <span className="text-red-600 font-medium">{searchError}</span>
+          </div>
+        </div>
+      )}
+
+      {/* AI Analysis Section */}
+      {results.length > 0 && (
+        <div className="px-8 py-4 max-w-7xl mx-auto w-full">
+          <div className="bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/20 rounded-xl p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center space-x-3">
+                <Brain className="w-6 h-6 text-purple-600" />
+                <h3 className="text-lg font-semibold text-foreground">AI Analysis</h3>
+              </div>
+              <Button
+                onClick={handleAiAnalysis}
+                disabled={isAnalyzing}
+                className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white"
+              >
+                {isAnalyzing ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Analyzing...
+                  </>
+                ) : (
+                  <>
+                    <Brain className="w-4 h-4 mr-2" />
+                    Get AI Insights
+                  </>
+                )}
+              </Button>
+            </div>
+            
+            {aiAnalysis && (
+              <div className="bg-card/50 rounded-lg p-6 border border-border/50">
+                <div className="prose prose-sm max-w-none text-foreground dark:prose-invert">
+                  <ReactMarkdown
+                    components={{
+                      h1: ({node, ...props}) => <h1 className="text-xl font-bold mb-4 text-foreground" {...props} />,
+                      h2: ({node, ...props}) => <h2 className="text-lg font-semibold mb-3 text-foreground" {...props} />,
+                      h3: ({node, ...props}) => <h3 className="text-base font-medium mb-2 text-foreground" {...props} />,
+                      p: ({node, ...props}) => <p className="text-sm leading-relaxed mb-3 text-foreground" {...props} />,
+                      ul: ({node, ...props}) => <ul className="list-disc list-inside mb-3 space-y-1" {...props} />,
+                      ol: ({node, ...props}) => <ol className="list-decimal list-inside mb-3 space-y-1" {...props} />,
+                      li: ({node, ...props}) => <li className="text-sm text-foreground" {...props} />,
+                      strong: ({node, ...props}) => <strong className="font-semibold text-foreground" {...props} />,
+                      em: ({node, ...props}) => <em className="italic text-foreground" {...props} />,
+                      code: ({node, ...props}) => <code className="bg-muted px-1 py-0.5 rounded text-xs font-mono text-foreground" {...props} />,
+                      blockquote: ({node, ...props}) => <blockquote className="border-l-4 border-purple-500 pl-4 italic text-foreground" {...props} />,
+                    }}
+                  >
+                    {aiAnalysis.summary}
+                  </ReactMarkdown>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
