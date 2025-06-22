@@ -3,3 +3,4 @@ naminter==1.0.4
 fastapi==0.115.13
 uvicorn==0.34.3
 google-genai
+sherlock-project==0.15.0
