@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { Send, LogOut, MessageCircle, Sparkles, Search, Filter, Download, Globe, ExternalLink } from "lucide-react";
+import { Send, LogOut, Cctv, Sparkles, Search, Filter, Download, Globe, ExternalLink } from "lucide-react";
 import SocialMediaGraph from "../components/social-media-graph";
 
 export default function Home() {
@@ -145,7 +145,7 @@ export default function Home() {
           {/* Gradient Background */}
           <div className={`absolute inset-0 transition-all duration-1000 ${
             theme === 'dark' 
-              ? 'bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900' 
+              ? 'bg-gradient-to-br from-slate-900 via-dark-900 to-slate-900' 
               : 'bg-gradient-to-br from-blue-50 via-indigo-100 to-purple-50'
           }`} />
           
@@ -212,7 +212,7 @@ export default function Home() {
             <div className="relative bg-card/80 backdrop-blur-xl rounded-3xl shadow-2xl p-12 w-full max-w-md border border-border/50">
               <div className="text-center mb-10">
                 <div className="w-20 h-20 bg-gradient-to-br from-primary to-primary/80 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg animate-pulse">
-                  <MessageCircle className="w-10 h-10 text-primary-foreground" />
+                  <Cctv className="w-10 h-10 text-primary-foreground" />
                 </div>
                 <h1 className="text-4xl font-bold text-foreground mb-3 bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text animate-fade-in">
                   WormDive
@@ -258,7 +258,7 @@ export default function Home() {
         <div className="flex items-center justify-between max-w-7xl mx-auto">
           <div className="flex items-center space-x-4">
             <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center shadow-lg">
-              <MessageCircle className="w-6 h-6 text-primary-foreground" />
+              <Cctv className="w-6 h-6 text-primary-foreground" />
             </div>
             <div>
               <h1 className="text-2xl font-bold text-foreground">WormDive</h1>
