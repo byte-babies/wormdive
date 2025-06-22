@@ -1,6 +1,6 @@
-ghunt==2.2.0
-naminter==1.0.4
+ghunt
+naminter
 fastapi==0.115.13
 uvicorn==0.34.3
 google-genai
-sherlock-project==0.15.0
+sherlock-project
