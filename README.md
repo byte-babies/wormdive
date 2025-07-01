@@ -2,8 +2,8 @@
 # 🪱 WormDive
 
 **WormDive** is a privacy-focused, AI-powered web tool that helps users understand what personal information about them is exposed online. By analyzing their digital footprint, WormDive empowers people to make informed choices about their privacy.
+![image](https://github.com/user-attachments/assets/c7ecdc11-3a01-4ec0-89c2-8e84a0d526f3)
 
-![WormDive Banner](optional-banner-image-url)
 
 ---
 
